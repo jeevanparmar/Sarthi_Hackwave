@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const Bodysupplier =require("../models/Bodysupplier");
 
 const axios = require('axios');
-const e = require('express');
 
 // Controller to create a new supplier
 exports.createSupplier = async (req, res) => {
@@ -134,8 +133,6 @@ exports.predictSupplyRisk = async (req, res) => {
 };
 
 
-
-
 //update suppliers
 exports.updateSupplier = async (req, res) => {
     try {
@@ -238,8 +235,67 @@ exports.predictBodyUnitRisk = async (req, res) => {
         if (risk_pct > 70) {
             is_recommendation = 1;
         }
-
         console.log("Flask response:", flaskResp.data);
+
+        //save data to mongo
+        const prediction = new Prediction({
+            supplier: supplier ? supplier._id : null,
+            delay_days: supplier.delay_days,
+            geopolitical_points_bounds: supplier.geopolitical_risk,
+            transport_status: supplier.transport_status,
+            required_material: required_units,
+            predicted_material,
+            risk_pct,
+            recommendation,
+            loss: calculatedLoss
+        });
+        await prediction.save();
+        let total_transformation_field =[prediction]
+        if (is_recommendation) {
+            for (let i = 2; i < 4; i++) {
+                //find supplierr with priority 2
+                const alt_supplier = await Bodysupplier.findOne({ priority: i });
+                if (alt_supplier) {
+                    // analysis data for alternative supplier
+                    const alt_payload = {
+                        delay_days: alt_supplier.delay_days,
+                        geopolitical_points_bounds: alt_supplier.geopolitical_risk,
+                        transport_status: alt_supplier.transport_status,
+                         required_units,
+                         supplier_reliability:alt_supplier.reliability_score,
+                         defective_rate:alt_supplier.defective_rate
+                    };
+                    const alt_flaskResp = await axios.post(flaskUrl, alt_payload);
+                    const { predicted_material, risk_pct, recommendation, loss } = alt_flaskResp.data;
+                    console.log("Alternative Flask response:", alt_flaskResp.data);
+                    is_recommendation = 0;
+                    if (risk_pct > 70) {
+                        is_recommendation = 1;
+                    }
+                    // loss calculation (example logic)
+                    let calculatedLoss = 0;
+                    if (loss) {
+                        calculatedLoss = loss * alt_supplier?.price_index || 1; // use supplier price index if available
+                    }
+                    // save prediction to MongoDB
+                    const alt_prediction = new Prediction({
+                        supplier: alt_supplier ? alt_supplier._id : null,
+                        delay_days: alt_supplier.delay_days,
+                        geopolitical_points_bounds: alt_supplier.geopolitical_risk,
+                        transport_status:alt_supplier.transport_status,
+                        required_material: required_units,
+                        predicted_material,
+                        risk_pct,
+                        recommendation,
+                        loss: calculatedLoss
+                    });
+                    await alt_prediction.save();
+                    total_transformation_field.push(alt_prediction);
+                }
+            }
+        }
+        res.status(200).json({ message: "Prediction successful", total_transformation_field } );
+
     }
 
 

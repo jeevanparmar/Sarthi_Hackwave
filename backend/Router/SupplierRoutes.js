@@ -4,7 +4,8 @@ const { createSupplier ,
     updateSupplier,
     createBodyUnit,
     updateBodyUnit,
-    getAllBodyUnits
+    getAllBodyUnits,
+    predictBodyUnitRisk
     
 } = require('../Controller/Suppliers');
 
@@ -19,5 +20,7 @@ router.post("/updateSupplier",updateSupplier)
 router.post("/bodyUnit",createBodyUnit)
 router.get("/bodyUnit",getAllBodyUnits)
 router.post("/updateBodyUnit",updateBodyUnit)
+router.post("/predictBodyUnit",predictBodyUnitRisk)
+
 
 module.exports = router;
