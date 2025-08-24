@@ -1,38 +1,74 @@
-import { Link } from "react-router-dom";
+import logo from '../assets/images/logo.png'
+import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Play, FileText, Database, Settings } from "lucide-react";
+import illus from '../assets/images/illus.png'; // placeholder illustration you downloaded
 
 const Sidebar = () => {
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
+
+  const linkClasses = (path) =>
+    `flex items-center space-x-2 rounded-lg px-3 py-2 transition ${
+      isActive(path)
+        ? "bg-white text-[#042c70] font-semibold shadow-sm" // active
+        : "text-white hover:bg-white hover:text-[#042c70]"
+    }`;
+
   return (
-    <aside className="w-64 bg-white border-r shadow-sm p-6">
-      <h1 className="text-2xl font-bold mb-2">AI Agent</h1>
-      <p className="text-sm text-gray-500 mb-6">Supply Chain Security</p>
+    <aside className="w-64 bg-gradient-to-r from-[#0473fb] to-[#042c70] shadow-sm p-6 flex flex-col justify-between h-screen">
+      {/* Top Section */}
+      <div>
+        <div className="flex items-center space-x-2 mb-6">
+          <img
+            src={logo}
+            height={30}
+            width={30}
+            className="text-white"
+            alt="Logo"
+          />
+          <h1 className="text-xl font-bold text-white">AI Agent</h1>
+        </div>
+        <p className="text-sm text-gray-200 mb-6">Supply Chain Security</p>
 
-      <nav className="space-y-4">
-        <Link to="/" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
-          <LayoutDashboard size={18} />
-          <span>Dashboard</span>
-        </Link>
+        {/* Navigation */}
+        <nav className="space-y-3">
+          <Link to="/" className={linkClasses("/")}>
+            <LayoutDashboard size={18} />
+            <span>Dashboard</span>
+          </Link>
 
-        <Link to="/simulations" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
-          <Play size={18} />
-          <span>Simulations</span>
-        </Link>
+          <Link to="/simulations" className={linkClasses("/simulations")}>
+            <Play size={18} />
+            <span>Simulations</span>
+          </Link>
 
-        <Link to="/risk-reports" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
-          <FileText size={18} />
-          <span>Risk Reports</span>
-        </Link>
+          <Link to="/risk-reports" className={linkClasses("/risk-reports")}>
+            <FileText size={18} />
+            <span>Risk Reports</span>
+          </Link>
 
-        <Link to="/data-integrations" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
-          <Database size={18} />
-          <span>Data Integrations</span>
-        </Link>
+          <Link to="/data-integrations" className={linkClasses("/data-integrations")}>
+            <Database size={18} />
+            <span>Data Integrations</span>
+          </Link>
 
-        <Link to="/settings" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
-          <Settings size={18} />
-          <span>Settings</span>
-        </Link>
-      </nav>
+          <Link to="/settings" className={linkClasses("/settings")}>
+            <Settings size={18} />
+            <span>Settings</span>
+          </Link>
+        </nav>
+      </div>
+
+      {/* Bottom Illustration Section */}
+      <div className="bg-white rounded-xl p-4 mt-6 text-center shadow-md">
+        <p className="text-sm font-semibold text-[#042c70] mb-2">
+          Use our Premium Features Now!
+        </p>
+        <div className="w-full h-28 flex items-center justify-center">
+          {/* Illustration image */}
+          <img src={illus} alt="Illustration" className="max-h-32 object-contain" />
+        </div>
+      </div>
     </aside>
   );
 };
