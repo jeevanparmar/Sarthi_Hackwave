@@ -77,7 +77,8 @@ exports.predictSupplyRisk = async (req, res) => {
             predicted_material,
             risk_pct,
             recommendation,
-            loss: calculatedLoss
+            loss: calculatedLoss,
+            companyName : supplier ? supplier.name : "xyz private ltd."
         });
         await prediction.save();
         let total_transformation_field =[prediction]
@@ -117,7 +118,8 @@ exports.predictSupplyRisk = async (req, res) => {
                         predicted_material,
                         risk_pct,
                         recommendation,
-                        loss: calculatedLoss
+                        loss: calculatedLoss,
+                        companyName : alt_supplier ? alt_supplier.name : "xyz private  ltd."
                     });
                     await alt_prediction.save();
                     total_transformation_field.push(alt_prediction);
@@ -291,7 +293,7 @@ exports.predictBodyUnitRisk = async (req, res) => {
                         risk_pct,
                         recommendation,
                         loss: calculatedLoss,
-                        companyName : supplier ? supplier.name : "xyz private  ltd."
+                        companyName : alt_supplier ? alt_supplier.name : "xyz private  ltd."
 
                     });
                     await alt_prediction.save();
