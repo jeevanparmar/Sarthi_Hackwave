@@ -1,5 +1,15 @@
-const SupplierController = require('../Controllers/SupplierController');
+const { createSupplier ,
+    getAllSuppliers,
+    predictSupplyRisk   ,
+    updateSupplier
+} = require('../Controller/Suppliers');
+
 const express = require('express');
 const router = express.Router();
 
-router.post('/suppliers', SupplierController.createSupplier);
+router.post('/suppliers', createSupplier);
+router.get('/suppliers', getAllSuppliers);
+router.post("/predict", predictSupplyRisk);
+router.post("/updateSupplier",updateSupplier)
+
+module.exports = router;
