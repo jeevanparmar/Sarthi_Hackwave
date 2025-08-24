@@ -1,9 +1,9 @@
-import React from 'react'
+  import React from 'react'
 
-const DataIntegrations = () => {
-  return (
-    <div>DataIntegrations</div>
-  )
-}
+  const DataIntegrations = () => {
+    return (
+      <div>DataIntegrations</div>
+    )
+  }
 
-export default DataIntegrations
+  export default DataIntegrations

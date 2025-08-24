@@ -18,10 +18,6 @@ import axios from "axios";
 export default function Dashboard() {
   // Dummy state data
   const [riskData, setRiskData] = useState({
-    // supplierRisk: { value: 0, change: 0, note: "" },
-    // transportDelays: { value: 0, change: 0, note: "" },
-    // geopolitical: { value: 0, change: 0, note: "" },
-    // climateRisk: { value: 0, change: 0, note: "" },
   });
 
   const [trendData, setTrendData] = useState([]);
@@ -64,74 +60,6 @@ export default function Dashboard() {
       risk: "Medium Risk",
     },
   ]);
-
-  const [scenario, setScenario] = useState("Supplier Strike");
-
-  const [recommendations] = useState([
-    {
-      title: "Diversify Supplier Base",
-      desc: "Reduce dependency on single suppliers by identifying 3 alternative vendors.",
-      priority: "High Priority",
-      reduction: "35%",
-    },
-    {
-      title: "Implement Buffer Inventory",
-      desc: "Increase safety stock for 21-day supply.",
-      priority: "Medium Priority",
-      reduction: "28%",
-    },
-    {
-      title: "Enhanced Monitoring System",
-      desc: "Deploy real-time tracking for temperature, location, and condition monitoring.",
-      priority: "Low Priority",
-      reduction: "15%",
-    },
-  ]);
-
-
-  const dummyResults = {
-    "message": "Prediction successful",
-    "total_transformation_field": [
-      {
-        "supplier": "68aaa37013556dfa05784c94",
-        "delay_days": 6,
-        "required_material": 1000,
-        "predicted_material": 582,
-        "loss": -41800,
-        "risk_pct": 91.79,
-        "recommendation": "High risk — consider backup supplier or increase safety stock",
-        "_id": "68aacaea1b9eeed46a6bb245",
-        "createdAt": "2025-08-24T08:18:50.121Z",
-        "__v": 0
-      },
-      {
-        "supplier": "68aaa3a813556dfa05784c96",
-        "delay_days": 0,
-        "geopolitical_points_bounds": 0.6,
-        "required_material": 1000,
-        "predicted_material": 1085,
-        "loss": 9350,
-        "risk_pct": 4.41,
-        "recommendation": "Low risk — proceed as planned",
-        "_id": "68aacaea1b9eeed46a6bb248",
-        "createdAt": "2025-08-24T08:18:50.409Z",
-        "__v": 0
-      },
-      {
-        "supplier": "68aaa3c513556dfa05784c98",
-        "delay_days": 0,
-        "geopolitical_points_bounds": 0.3,
-        "required_material": 1000,
-        "predicted_material": 972,
-        "loss": -3640,
-        "risk_pct": 7.74,
-        "recommendation": "Low risk — proceed as planned",
-        "_id": "68aacaea1b9eeed46a6bb24b",
-        "createdAt": "2025-08-24T08:18:50.576Z",
-        "__v": 0
-      }
-    ]
-  }
 
   const fetchResults = async () => {
     try {
@@ -207,7 +135,7 @@ export default function Dashboard() {
                   label={{
                     value: "Month",
                     position: "insideBottom",
-                    offset: -5,
+                    offset: -4,
                     style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
                   }}
                 />
@@ -250,7 +178,7 @@ export default function Dashboard() {
                   label={{
                     value: "Month",
                     position: "insideBottom",
-                    offset: -5,
+                    offset: -4,
                     style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
                   }}
                 />
@@ -294,7 +222,7 @@ export default function Dashboard() {
                   label={{
                     value: "Month",
                     position: "insideBottom",
-                    offset: -5,
+                    offset: -4,
                     style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
                   }}
                 />
@@ -330,7 +258,7 @@ export default function Dashboard() {
           {/* Predicted Loss */}
           <div className="bg-white p-4 rounded-2xl shadow-lg mb-6">
             <h3 className="font-semibold mb-3 text-gray-700">Predicted Loss</h3>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={260}>
               <LineChart data={trendData}>
                 <CartesianGrid stroke="#e5e7eb" strokeDasharray="4 4" />
                 <XAxis
