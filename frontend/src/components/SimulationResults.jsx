@@ -17,7 +17,7 @@ import {
 
 const SimulationResults = () => {
   const location = useLocation();
-  const { data1 } = location.state || {};  
+  const { data1 } = location.state || {};
   console.log("Received data:", data1);
 
   const data = data1 || {};
@@ -33,23 +33,28 @@ const SimulationResults = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Bar Chart: Required vs Predicted */}
-        <div className="bg-white shadow-md rounded-2xl p-4">
-          <h3 className="text-lg font-semibold mb-2">
+        <div className="bg-white shadow-md rounded-2xl p-6">
+          <h3 className="text-lg font-semibold mb-4 text-gray-800">
             Required vs Predicted Material
           </h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={suppliers}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="supplier" />
-              <YAxis />
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={suppliers.map(item => ({
+                ...item,
+                companyLabel: item.companyName || item.supplier, // fallback agar companyName missing ho
+              }))}
+            >
+              <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200" />
+              <XAxis dataKey="companyLabel" className="text-sm" />
+              <YAxis className="text-sm" />
               <Tooltip />
               <Legend />
-              <Bar
+              {/* <Bar
                 dataKey="required_material"
                 fill="#042c70"
                 name="Required"
                 radius={[6, 6, 0, 0]}
-              />
+              /> */}
               <Bar
                 dataKey="predicted_material"
                 fill="#0473fb"
@@ -60,13 +65,19 @@ const SimulationResults = () => {
           </ResponsiveContainer>
         </div>
 
+
         {/* Line Chart: Risk % over suppliers */}
         <div className="bg-white shadow-md rounded-2xl p-4">
           <h3 className="text-lg font-semibold mb-2">Risk % by Supplier</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={suppliers}>
+            <LineChart
+              data={suppliers.map(item => ({
+                ...item,
+                companyLabel: item.companyName || item.supplier, // agar companyName missing hai toh supplier use ho
+              }))}
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="supplier" />
+              <XAxis dataKey="companyLabel" /> {/* ab company ka naam dikh jayega */}
               <YAxis />
               <Tooltip />
               <Line
@@ -78,6 +89,8 @@ const SimulationResults = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
+
+
 
         {/* Loss Chart */}
         <div className="bg-white shadow-md rounded-2xl p-4 md:col-span-2">
@@ -103,75 +116,73 @@ const SimulationResults = () => {
       </div>
 
       {/* Supplier Risk Table */}
-<div className="bg-white shadow-md rounded-2xl p-4">
-  <h3 className="text-lg font-semibold mb-4">Supplier Risk Assessment</h3>
-  <div className="overflow-x-auto">
-    <table className="w-full text-sm">
-      <thead>
-        <tr className="bg-gray-50 text-gray-700 text-left">
-          <th className="p-3 font-semibold">Supplier</th>
-          <th className="p-3 font-semibold">Delay</th>
-          <th className="p-3 font-semibold">Required</th>
-          <th className="p-3 font-semibold">Predicted</th>
-          <th className="p-3 font-semibold">Loss</th>
-          <th className="p-3 font-semibold">Risk %</th>
-          <th className="p-3 font-semibold">Recommendation</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-100">
-        {suppliers.map((s) => (
-          <tr
-            key={s._id}
-            className="hover:bg-gray-50 transition rounded-xl"
-          >
-            {/* Supplier ID with pill */}
-            <td className="p-3 font-medium">
-              <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-semibold">
-                {s.supplier.slice(0, 6)}...
-              </span>
-            </td>
+      <div className="bg-white shadow-md rounded-2xl p-4">
+        <h3 className="text-lg font-semibold mb-4">Supplier Risk Assessment</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 text-gray-700 text-left">
+                <th className="p-3 font-semibold">Supplier</th>
+                <th className="p-3 font-semibold">Delay</th>
+                <th className="p-3 font-semibold">Required</th>
+                <th className="p-3 font-semibold">Predicted</th>
+                <th className="p-3 font-semibold">Loss</th>
+                <th className="p-3 font-semibold">Risk %</th>
+                <th className="p-3 font-semibold">Recommendation</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {suppliers.map((s) => (
+                <tr
+                  key={s._id}
+                  className="hover:bg-gray-50 transition rounded-xl"
+                >
+                  {/* Supplier ID with pill */}
+                  <td className="p-3 font-medium">
+                    <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-semibold">
+                      {s.supplier.slice(0, 6)}...
+                    </span>
+                  </td>
 
-            {/* Delay days */}
-            <td className="p-3 text-gray-700">{s.delay_days}</td>
+                  {/* Delay days */}
+                  <td className="p-3 text-gray-700">{s.delay_days}</td>
 
-            {/* Required */}
-            <td className="p-3">{s.required_material}</td>
+                  {/* Required */}
+                  <td className="p-3">{s.required_material}</td>
 
-            {/* Predicted */}
-            <td className="p-3">{s.predicted_material}</td>
+                  {/* Predicted */}
+                  <td className="p-3">{s.predicted_material}</td>
 
-            {/* Loss with color */}
-            <td
-              className={`p-3 font-semibold ${
-                s.loss > 0 ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {s.loss}
-            </td>
+                  {/* Loss with color */}
+                  <td
+                    className={`p-3 font-semibold ${s.loss > 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                  >
+                    {s.loss}
+                  </td>
 
-            {/* Risk with badge */}
-            <td className="p-3">
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-bold ${
-                  s.risk_pct > 70
-                    ? "bg-red-100 text-red-700"
-                    : s.risk_pct > 30
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-green-100 text-green-700"
-                }`}
-              >
-                {s.risk_pct.toFixed(2)}%
-              </span>
-            </td>
+                  {/* Risk with badge */}
+                  <td className="p-3">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-bold ${s.risk_pct > 70
+                        ? "bg-red-100 text-red-700"
+                        : s.risk_pct > 30
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-green-100 text-green-700"
+                        }`}
+                    >
+                      {s.risk_pct.toFixed(2)}%
+                    </span>
+                  </td>
 
-            {/* Recommendation with italic style */}
-            <td className="p-3 text-gray-600 italic">{s.recommendation}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+                  {/* Recommendation with italic style */}
+                  <td className="p-3 text-gray-600 italic">{s.recommendation}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
     </div>
   );

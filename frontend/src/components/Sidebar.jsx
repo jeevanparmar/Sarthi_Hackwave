@@ -49,7 +49,7 @@ const Sidebar = () => {
 
           <Link to="/data-integrations" className={linkClasses("/data-integrations")}>
             <Database size={18} />
-            <span>Data Integrations</span>
+            <span>Detailed-Data</span>
           </Link>
 
           <Link to="/settings" className={linkClasses("/settings")}>
