@@ -211,34 +211,40 @@ exports.updateBodyUnit = async (req, res) => {
 exports.predictBodyUnitRisk = async (req, res) => {    
     try {
         const { required_units = 1000 } = req.body;
-        const supplier = await Bodysupplier.findOne({ priority: 1});
+        const supplier = await Bodysupplier.findOne({ priority: 1 });
+
+        if (!supplier) {
+            return res.status(404).json({ message: "No primary body unit supplier found" });
+        }
 
         // call Flask model server
         const flaskUrl = (process.env.FLASK_URL || "http://127.0.0.1:5000") + "/predictBody";
-        const payload = { delay_days:supplier.delay_days,
-             geopolitical_points_bounds:supplier.geopolitical_risk,
-              transport_status:supplier.transport_status,
-               required_units ,
-               supplier_reliability:supplier.reliability_score,
-               defective_rate:supplier.defective_rate};
-        
+        const payload = {
+            delay_days: supplier.delay_days,
+            geopolitical_points_bounds: supplier.geopolitical_risk,
+            transport_status: supplier.transport_status,
+            required_units,
+            supplier_reliability: supplier.reliability_score,
+            defective_rate: supplier.defective_rate
+        };
+
         const flaskResp = await axios.post(flaskUrl, payload, { timeout: 8000 });
-        const { predicted_material, risk_pct, recommendation, loss } = flaskResp.data; 
-        
-        //calculate loss
-            let calculatedLoss = 0;
+        const { predicted_material, risk_pct, recommendation, loss } = flaskResp.data;
+
+        // calculate loss
+        let calculatedLoss = 0;
         if (loss) {
-            calculatedLoss = loss * supplier?.price_index || 1; // use supplier price index if available
+            calculatedLoss = loss * (supplier?.price_index || 10000);
         }
 
-        //mitigation
+        // mitigation
         let is_recommendation = 0;
         if (risk_pct > 70) {
             is_recommendation = 1;
         }
         console.log("Flask response:", flaskResp.data);
 
-        //save data to mongo
+        // save data to mongo
         const prediction = new Prediction({
             supplier: supplier ? supplier._id : null,
             delay_days: supplier.delay_days,
@@ -248,62 +254,56 @@ exports.predictBodyUnitRisk = async (req, res) => {
             predicted_material,
             risk_pct,
             recommendation,
-            loss: calculatedLoss
+            loss: calculatedLoss,
+            companyName : supplier ? supplier.name : "xyz private ltd."
         });
         await prediction.save();
-        let total_transformation_field =[prediction]
+        let total_transformation_field = [prediction];
+
         if (is_recommendation) {
             for (let i = 2; i < 4; i++) {
-                //find supplierr with priority 2
                 const alt_supplier = await Bodysupplier.findOne({ priority: i });
                 if (alt_supplier) {
-                    // analysis data for alternative supplier
                     const alt_payload = {
                         delay_days: alt_supplier.delay_days,
                         geopolitical_points_bounds: alt_supplier.geopolitical_risk,
                         transport_status: alt_supplier.transport_status,
-                         required_units,
-                         supplier_reliability:alt_supplier.reliability_score,
-                         defective_rate:alt_supplier.defective_rate
+                        required_units,
+                        supplier_reliability: alt_supplier.reliability_score,
+                        defective_rate: alt_supplier.defective_rate
                     };
-                    const alt_flaskResp = await axios.post(flaskUrl, alt_payload);
+                    const alt_flaskResp = await axios.post(flaskUrl, alt_payload, { timeout: 8000 });
                     const { predicted_material, risk_pct, recommendation, loss } = alt_flaskResp.data;
                     console.log("Alternative Flask response:", alt_flaskResp.data);
-                    is_recommendation = 0;
-                    if (risk_pct > 70) {
-                        is_recommendation = 1;
-                    }
-                    // loss calculation (example logic)
+
                     let calculatedLoss = 0;
                     if (loss) {
-                        calculatedLoss = loss * alt_supplier?.price_index || 1; // use supplier price index if available
+                        calculatedLoss = loss * (alt_supplier?.price_index || 1);
                     }
-                    // save prediction to MongoDB
+
                     const alt_prediction = new Prediction({
                         supplier: alt_supplier ? alt_supplier._id : null,
                         delay_days: alt_supplier.delay_days,
                         geopolitical_points_bounds: alt_supplier.geopolitical_risk,
-                        transport_status:alt_supplier.transport_status,
+                        transport_status: alt_supplier.transport_status,
                         required_material: required_units,
                         predicted_material,
                         risk_pct,
                         recommendation,
-                        loss: calculatedLoss
+                        loss: calculatedLoss,
+                        companyName : supplier ? supplier.name : "xyz private ltd."
+
                     });
                     await alt_prediction.save();
                     total_transformation_field.push(alt_prediction);
                 }
             }
         }
-        res.status(200).json({ message: "Prediction successful", total_transformation_field } );
-
+        res.status(200).json({ message: "Prediction successful", total_transformation_field });
+    } catch (e) {
+        console.error("Prediction error:", e);
+        res.status(500).json({ message: "Error during body unit prediction", error: e.message });
     }
-
-
-    
-        catch(e){
-
-        }
 }        
 
 //get all body units

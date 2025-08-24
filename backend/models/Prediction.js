@@ -11,6 +11,7 @@ const PredictionSchema = new Schema({
   loss: Number,
   risk_pct: Number,
   recommendation: String,
+  companyName: { type: String, default: "xyz private ltd" },
   createdAt: { type: Date, default: Date.now }
 });
 

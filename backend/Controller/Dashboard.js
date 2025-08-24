@@ -151,7 +151,7 @@ exports.getDashboardData = async (req, res) => {
             predictedMaterialDiffPercent = 100;
         }
 
-        const geopolitical = {
+        const PredictedMaterial = {
             value: Math.round(todayPredicted),
             change: Math.round(predictedMaterialDiffPercent),
             note: `Predicted material: ${Math.round(todayPredicted)}`
@@ -198,7 +198,7 @@ exports.getDashboardData = async (req, res) => {
             predictedLossDiffPercent = 100;
         }
 
-        const climateRisk = {
+        const PredictedLoss = {
             value: Math.round(todayPredictedLoss),
             change: Math.round(predictedLossDiffPercent),
             note: `Predicted loss: $${Math.round(todayPredictedLoss)}`
@@ -232,33 +232,17 @@ exports.getDashboardData = async (req, res) => {
           ]);
         const trendData = trendDataAgg.map(item => ({
             month: `${item._id.day}/${item._id.month}`,
-            supplier: Math.round(item.avgRiskPct),
-
-            //convert into percentage of 100
+            supplier: Math.round(item.avgRiskPct),            //convert into percentage of 100
             transport: Math.round(item.avgDelayDays),
             geo: Math.round(item.totalPredictedMaterial),
             climate: Math.round(item.totalPredictedLoss)
         }));
 
-
-/*          const [trendData, setTrendData] = useState([
-    { month: "", supplier: 50, transport: 30, geo: 40, climate: 25 },
-    { month: "", supplier: 60, transport: 45, geo: 50, climate: 30 },
-    { month: "", supplier: 55, transport: 35, geo: 60, climate: 40 },
-    { month: "", supplier: 70, transport: 25, geo: 75, climate: 35 },
-    { month: "", supplier: 65, transport: 60, geo: 55, climate: 45 },
-    { month: "", supplier: 58, transport: 40, geo: 65, climate: 30 },
-  ]);
-
-*/
-
-
-
        return res.status(200).json({
             supplierRisk,
             transportDelays,
-            geopolitical,   
-            climateRisk,  
+            PredictedMaterial,   
+            PredictedLoss,  
             trendData,      
         });
 
