@@ -1,7 +1,11 @@
 const { createSupplier ,
     getAllSuppliers,
     predictSupplyRisk   ,
-    updateSupplier
+    updateSupplier,
+    createBodyUnit,
+    updateBodyUnit,
+    getAllBodyUnits
+    
 } = require('../Controller/Suppliers');
 
 const express = require('express');
@@ -11,5 +15,9 @@ router.post('/suppliers', createSupplier);
 router.get('/suppliers', getAllSuppliers);
 router.post("/predict", predictSupplyRisk);
 router.post("/updateSupplier",updateSupplier)
+
+router.post("/bodyUnit",createBodyUnit)
+router.get("/bodyUnit",getAllBodyUnits)
+router.post("/updateBodyUnit",updateBodyUnit)
 
 module.exports = router;

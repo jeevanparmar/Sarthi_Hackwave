@@ -1,6 +1,11 @@
 const Supplier = require('../models/Supplier');
 const Prediction = require('../models/Prediction');
+const mongoose = require('mongoose');
+// const BodyUnit = require("../models/BodyUnit");
+const Bodysupplier =require("../models/Bodysupplier");
+
 const axios = require('axios');
+const e = require('express');
 
 // Controller to create a new supplier
 exports.createSupplier = async (req, res) => {
@@ -30,7 +35,7 @@ exports.getAllSuppliers = async (req, res) => {
 exports.predictSupplyRisk = async (req, res) => {    
     try {
         // const { supplierId, delay_days, geopolitical_points_bounds, transport_status, required_material } = req.body;
-        const {required_material} = req.body;
+        const { required_material = 1000 } = req.body;
         const supplier = await Supplier.findOne({ priority: 1, product: "Tyres" });
 
         // optional: fetch supplier (if supplierId provided)
@@ -131,8 +136,6 @@ exports.predictSupplyRisk = async (req, res) => {
 
 
 
-
-
 //update suppliers
 exports.updateSupplier = async (req, res) => {
     try {
@@ -156,3 +159,102 @@ exports.updateSupplier = async (req, res) => {
         res.status(500).json({ message: "Error updating supplier", error: e.message });
     }
 }
+
+
+//creaet body unit
+exports.createBodyUnit = async (req, res) => {
+    try {
+        const { name, country, product, priority, defective_rate, delay_days, geo, transport_status, expected_units, price_index } = req.body;
+        // Create a new body unit object (not saved to database)
+        const bodyUnit = new Bodysupplier({
+            name,
+            country,
+            product,
+            priority,
+            defective_rate,
+            delay_days,
+            geo,
+            transport_status,
+            expected_units,
+            price_index
+        });
+        await bodyUnit.save();
+        res.status(201).json({ message: 'Body Unit created successfully', bodyUnit });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating Body Unit', error: error.message });
+    }
+};
+
+//update body unit
+exports.updateBodyUnit = async (req, res) => {
+    try {
+        const { bodyUnitId, ...updateData } = req.body;
+        if (!bodyUnitId) {
+            return res.status(400).json({ message: "bodyUnitId is required" });
+        }
+
+        const bodyUnit = await Bodysupplier.findByIdAndUpdate(
+            bodyUnitId,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        if (!bodyUnit) {
+            return res.status(404).json({ message: "Body Unit not found" });
+        }
+
+        res.status(200).json({ message: "Body Unit updated successfully", bodyUnit });
+    } catch (e) {
+        res.status(500).json({ message: "Error updating Body Unit", error: e.message });
+    }
+}
+
+
+exports.predictBodyUnitRisk = async (req, res) => {    
+    try {
+        const { required_units = 1000 } = req.body;
+        const supplier = await Bodysupplier.findOne({ priority: 1});
+
+        // call Flask model server
+        const flaskUrl = (process.env.FLASK_URL || "http://127.0.0.1:5000") + "/predictBody";
+        const payload = { delay_days:supplier.delay_days,
+             geopolitical_points_bounds:supplier.geopolitical_risk,
+              transport_status:supplier.transport_status,
+               required_units ,
+               supplier_reliability:supplier.reliability_score,
+               defective_rate:supplier.defective_rate};
+        
+        const flaskResp = await axios.post(flaskUrl, payload, { timeout: 8000 });
+        const { predicted_material, risk_pct, recommendation, loss } = flaskResp.data; 
+        
+        //calculate loss
+            let calculatedLoss = 0;
+        if (loss) {
+            calculatedLoss = loss * supplier?.price_index || 1; // use supplier price index if available
+        }
+
+        //mitigation
+        let is_recommendation = 0;
+        if (risk_pct > 70) {
+            is_recommendation = 1;
+        }
+
+        console.log("Flask response:", flaskResp.data);
+    }
+
+
+    
+        catch(e){
+
+        }
+}        
+
+//get all body units
+exports.getAllBodyUnits = async (req, res) => {
+    try {
+        const bodyUnits = await Bodysupplier.find();
+        res.status(200).json(bodyUnits);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching Body Units', error: error.message });
+    }
+}   

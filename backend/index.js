@@ -4,6 +4,7 @@ const weatherApi = require("./Router/Weather");
 
 
 const app= express()
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/api", weatherApi);
 app.use("/api",require("./Router/SupplierRoutes"));
