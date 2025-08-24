@@ -222,8 +222,8 @@ exports.getDashboardData = async (req, res) => {
                  },
                  avgRiskPct: { $avg: "$risk_pct" },
                  avgDelayDays: { $avg: "$delay_days" },
-                 totalPredictedMaterial: { $min: "$predicted_material" },
-                 totalPredictedLoss: { $max: "$loss" }
+                 totalPredictedMaterial: { $avg: "$predicted_material" },
+                 totalPredictedLoss: { $avg: "$loss" }
                 }
                 },      
                 {
@@ -246,6 +246,66 @@ exports.getDashboardData = async (req, res) => {
             trendData,      
         });
 
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+}
+
+
+//show reports on the dashboard
+exports.getReports = async (req, res) => {
+    try {
+        const specificIds = [
+            new mongoose.Types.ObjectId("68aaea5c6aa1ad06a689a779"),
+            new mongoose.Types.ObjectId("68aaa37013556dfa05784c94")
+        ];
+
+        // Set up date range for yesterday and today
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        // Fetch reports for yesterday and today
+        const allReportsAgg = await Prediction.aggregate([
+            {
+                $match: {
+                    supplier: { $in: specificIds },
+                    createdAt: { $gte: yesterday, $lt: tomorrow }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    risk_pct: 1,
+                    delay_days: 1,
+                    predicted_material: 1,
+                    loss: 1
+                }
+            },
+            {
+                $sort: { date: 1 }
+            }
+        ]);
+
+        // Add label for today and tomorrow
+        const reports = allReportsAgg.map(report => {
+            let label = '';
+            if (report.date === today.toISOString().slice(0, 10)) {
+                label = 'today';
+            } else if (report.date === yesterday.toISOString().slice(0, 10)) {
+                label = 'tomorrow';
+            }
+            return { ...report, label };
+        });
+
+        return res.status(200).json({
+            reports
+        });
     } catch (error) {
         console.error("Error fetching dashboard data:", error);
         res.status(500).json({ message: "Server Error" });
