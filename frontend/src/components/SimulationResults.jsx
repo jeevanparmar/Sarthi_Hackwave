@@ -21,46 +21,6 @@ const SimulationResults = () => {
   console.log("Received data:", data1);
 
   const data = data1 || {};
-  // Dummy backend-like data
-  // const data = {
-  //   message: "Prediction successful",
-  //   total_transformation_field: [
-  //     {
-  //       supplier: "68aaa37013556dfa05784c94",
-  //       delay_days: 6,
-  //       required_material: 1000,
-  //       predicted_material: 582,
-  //       loss: -41800,
-  //       risk_pct: 91.79,
-  //       recommendation:
-  //         "High risk — consider backup supplier or increase safety stock",
-  //       _id: "68aacaea1b9eeed46a6bb245",
-  //     },
-  //     {
-  //       supplier: "68aaa3a813556dfa05784c96",
-  //       delay_days: 0,
-  //       geopolitical_points_bounds: 0.6,
-  //       required_material: 1000,
-  //       predicted_material: 1085,
-  //       loss: 9350,
-  //       risk_pct: 4.41,
-  //       recommendation: "Low risk — proceed as planned",
-  //       _id: "68aacaea1b9eeed46a6bb248",
-  //     },
-  //     {
-  //       supplier: "68aaa3c513556dfa05784c98",
-  //       delay_days: 0,
-  //       geopolitical_points_bounds: 0.3,
-  //       required_material: 1000,
-  //       predicted_material: 972,
-  //       loss: -3640,
-  //       risk_pct: 7.74,
-  //       recommendation: "Low risk — proceed as planned",
-  //       _id: "68aacaea1b9eeed46a6bb24b",
-  //     },
-  //   ],
-  // };
-
   const suppliers = data.total_transformation_field;
 
   return (

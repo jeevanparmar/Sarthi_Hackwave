@@ -1,6 +1,7 @@
 // src/components/RiskReports.jsx
 import React, { useState } from "react";
 import { Calendar, Download, FileText } from "lucide-react";
+import axios from "axios";
 
 const RiskReports = () => {
   const [reports] = useState([
@@ -26,6 +27,22 @@ const RiskReports = () => {
       status: "Draft",
     },
   ]);
+
+  const fetchreport =async()=>{
+    try {
+      const res = await axios.get("http://localhost:3000/api/getReports");
+      console.log("report data",res.data);
+    }
+    catch (error) {
+      console.error("Error fetching reports:", error);
+    }
+  }
+
+  
+  React.useEffect(()=>{
+    fetchreport();
+  },[])
+
 
   return (
     <div className="p-6 space-y-6">

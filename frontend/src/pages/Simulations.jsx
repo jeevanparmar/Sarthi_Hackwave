@@ -19,7 +19,7 @@ const Simulation = () => {
   const gettyres = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/suppliers");
-      console.log(response.data);
+      console.log("tyre data : ",response.data);
       setSuppliers(response.data);
     }
     catch (error) {
@@ -57,13 +57,16 @@ const Simulation = () => {
 
   const handleChangeBody = (e) => {
     const { name, value } = e.target;
+
+    // jinke andar numbers chahiye un sabhi ko yaha list karo
+    const numericFields = ["defective_rate", "expected_units", "delay_days", "geopolitical_risk", "transport_status"];
+
     setFormValues((prev) => ({
       ...prev,
-      [name]: name === "defective_rate" || name === "expected_units" || name === "delay_days"
-        ? parseFloat(value) || 0
-        : value,
+      [name]: numericFields.includes(name) ? parseFloat(value) || 0 : value,
     }));
   };
+
 
   const onCancel = () => {
     setEditingSupplier(null);
@@ -144,11 +147,11 @@ const Simulation = () => {
   };
 
   const handlerBodyPrediction = async () => {
-    alert("click")
+    // alert("click")
     try {
       console.log("Running body prediction...");
       const payload = { bodySuppliers };
-      const response = await axios.post("http://localhost:3000/api/predictBodyUnit",payload);
+      const response = await axios.post("http://localhost:3000/api/predictBodyUnit", payload);
       console.log("Prediction response:", response.data);
       navigate("/simulateResult", { state: { data1: response.data } });
       alert("Simulation run successfully! Check console for details.");
@@ -218,7 +221,7 @@ const Simulation = () => {
                   <th className="p-4">Country</th>
                   <th className="p-4">Defective Rate</th>
                   <th className="p-4">Transport Status</th>
-                  <th className="p-4">Expected Units</th>
+                  <th className="p-4">geopolitical risk</th>
                   <th className="p-4">Price Index</th>
                   <th className="p-4">Delay Days</th>
                   <th className="p-4 text-center">Action</th>
@@ -237,10 +240,10 @@ const Simulation = () => {
                     <td className="p-4">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${s.defective_rate < 0.03
-                            ? "bg-green-100 text-green-700"
-                            : s.defective_rate <= 0.06
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-red-100 text-red-700"
+                          ? "bg-green-100 text-green-700"
+                          : s.defective_rate <= 0.06
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
                           }`}
                       >
                         {(s.defective_rate * 100).toFixed(1)}%
@@ -248,21 +251,35 @@ const Simulation = () => {
                     </td>
 
                     {/* Transport Status */}
-                    <td className="p-4 text-gray-600">{s.transport_status}</td>
+                    <td className="p-4 text-gray-600">
+                      {s.transport_status === 1
+                        ? "Smooth"
+                        : s.transport_status === 2
+                          ? "Minor"
+                          : s.transport_status === 3
+                            ? "Disrupt"
+                            : "Unknown"}
+                    </td>
+
 
                     {/* Expected Units badge */}
                     <td className="p-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${s.expected_units > 1000
-                            ? "bg-green-100 text-green-700"
-                            : s.expected_units >= 700
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-red-100 text-red-700"
+                        className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${s.geopolitical_risk <= 0.2
+                          ? "bg-green-100 text-green-700"
+                          : s.geopolitical_risk <= 0.5
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
                           }`}
                       >
-                        {s.expected_units}
+                        {s.geopolitical_risk <= 0.2
+                          ? "Friendly"
+                          : s.geopolitical_risk <= 0.5
+                            ? "Normal"
+                            : "Critical"}
                       </span>
                     </td>
+
 
                     <td className="p-4 text-gray-600">{s.price_index}</td>
                     <td className="p-4 text-gray-600">{s.delay_days} days</td>
@@ -305,6 +322,7 @@ const Simulation = () => {
             </h3>
 
             <div className="space-y-4">
+        
               {/* Defective Rate */}
               <div>
                 <label className="text-sm font-medium text-gray-700">Defective Rate</label>
@@ -319,17 +337,35 @@ const Simulation = () => {
                   className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
-              {/* Expected Units */}
+              {/* {Status} */}
               <div>
-                <label className="text-sm font-medium text-gray-700">Expected Units</label>
-                <input
-                  type="number"
-                  name="expected_units"
-                  value={formValues.expected_units}
+                <label className="text-sm font-medium text-gray-700">Transport Status</label>
+                <select
+                  name="transport_status"
+                  value={formValues.transport_status}
                   onChange={handleChangeBody}
                   className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value={1}>Smooth</option>
+                  <option value={2}>Minor Delay</option>
+                  <option value={3}>Disrupt</option>
+                </select>
+              </div>
+
+
+              {/* Geopolitical Risk */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">Geopolitical Risk</label>
+                <select
+                  name="geopolitical_risk"
+                  value={formValues.geopolitical_risk}
+                  onChange={handleChangeBody}
+                  className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value={0.2}>Friendly</option>
+                  <option value={0.5}>Normal</option>
+                  <option value={0.8}>Critical</option>
+                </select>
               </div>
 
               {/* Delay Days */}
@@ -398,10 +434,10 @@ const Simulation = () => {
                     <td className="p-4">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${s.reliability_score >= 0.9
-                            ? "bg-green-100 text-green-700"
-                            : s.reliability_score >= 0.75
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-red-100 text-red-700"
+                          ? "bg-green-100 text-green-700"
+                          : s.reliability_score >= 0.75
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
                           }`}
                       >
                         {(s.reliability_score * 100).toFixed(0)}%
@@ -446,30 +482,34 @@ const Simulation = () => {
             <h3 className="text-xl font-semibold mb-4 text-gray-800 text-center">
               ✏️ Edit Supplier
             </h3>
-
             <div className="space-y-4">
               {/* Reliability Score */}
-              <input
-                type="number"
-                step="0.01"
-                name="reliability_score"
-                value={formValues.reliability_score}
-                onChange={handleChange}
-                className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500"
-              />
+              <div>
+                <label className="text-sm text-gray-600">Reliability Score</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="reliability_score"
+                  value={formValues.reliability_score}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-
-              <select
-                name="geopolitical_risk"
-                value={formValues.geopolitical_risk}
-                onChange={handleChange}
-                className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={0.7}>High</option>
-                <option value={0.5}>Medium</option>
-                <option value={0.3}>Low</option>
-              </select>
-
+              {/* Geopolitical Risk */}
+              <div>
+                <label className="text-sm text-gray-600">Geopolitical Risk</label>
+                <select
+                  name="geopolitical_risk"
+                  value={formValues.geopolitical_risk}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value={0.7}>High</option>
+                  <option value={0.5}>Medium</option>
+                  <option value={0.3}>Low</option>
+                </select>
+              </div>
 
               {/* Delay Days */}
               <div>
@@ -477,12 +517,13 @@ const Simulation = () => {
                 <input
                   type="number"
                   name="delay_days"
-                  value={formValues.delay_days}   // <-- controlled input
+                  value={formValues.delay_days}
                   onChange={handleChange}
                   className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
+
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-3 mt-6">

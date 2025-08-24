@@ -18,10 +18,10 @@ import axios from "axios";
 export default function Dashboard() {
   // Dummy state data
   const [riskData, setRiskData] = useState({
-    supplierRisk: { value: 0, change: 0, note: "" },
-    transportDelays: { value: 0, change: 0, note: "" },
-    geopolitical: { value: 0, change: 0, note: "" },
-    climateRisk: { value: 0, change: 0, note: "" },
+    // supplierRisk: { value: 0, change: 0, note: "" },
+    // transportDelays: { value: 0, change: 0, note: "" },
+    // geopolitical: { value: 0, change: 0, note: "" },
+    // climateRisk: { value: 0, change: 0, note: "" },
   });
 
   const [trendData, setTrendData] = useState([]);
@@ -88,19 +88,6 @@ export default function Dashboard() {
     },
   ]);
 
-  // Placeholder function for API call
-  /*
-  useEffect(() => {
-    async function fetchData() {
-      const response = await fetch("/api/dashboard");
-      const data = await response.json();
-      setRiskData(data.riskData);
-      setTrendData(data.trendData);
-      setMapData(data.mapData);
-    }
-    fetchData();
-  }, []);
-  */
 
   const dummyResults = {
     "message": "Prediction successful",
@@ -157,8 +144,8 @@ export default function Dashboard() {
       setRiskData({
         supplierRisk: apiData.supplierRisk,
         transportDelays: apiData.transportDelays,
-        geopolitical: apiData.geopolitical,
-        climateRisk: apiData.climateRisk,
+        PredictedMaterial: apiData.PredictedMaterial,
+        PredictedLoss: apiData.PredictedLoss,
       });
 
       // ✅ set trendData directly
