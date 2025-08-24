@@ -247,7 +247,7 @@ exports.getDashboardData = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Error fetching dashboard jds  data:", error);
         res.status(500).json({ message: "Server Error" });
     }
 }

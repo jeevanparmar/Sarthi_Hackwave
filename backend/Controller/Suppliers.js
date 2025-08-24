@@ -291,7 +291,7 @@ exports.predictBodyUnitRisk = async (req, res) => {
                         risk_pct,
                         recommendation,
                         loss: calculatedLoss,
-                        companyName : supplier ? supplier.name : "xyz private ltd."
+                        companyName : supplier ? supplier.name : "xyz private  ltd."
 
                     });
                     await alt_prediction.save();
