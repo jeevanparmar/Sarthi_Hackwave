@@ -1,17 +1,15 @@
 const express = require("express")
 const dbconnect=require("../backend/config/database");
 const weatherApi = require("./Router/Weather");
-
-const cors= require("cors");
-
-
 const app= express()
 
+const cors = require("cors");
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/api", weatherApi);
 app.use("/api",require("./Router/SupplierRoutes"));
+app.use("/api",require("./Router/Dashboard"));
 
 
 app.listen(3000,()=>{
