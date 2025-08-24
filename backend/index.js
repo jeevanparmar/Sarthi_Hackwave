@@ -1,9 +1,10 @@
 const express = require("express")
 const dbconnect=require("../backend/config/database");
 const weatherApi = require("./Router/Weather");
-
-
 const app= express()
+
+const cors = require("cors");
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/api", weatherApi);

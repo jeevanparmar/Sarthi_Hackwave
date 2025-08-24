@@ -23,6 +23,7 @@ exports.createSupplier = async (req, res) => {
 exports.getAllSuppliers = async (req, res) => {
     try {
         const suppliers = await Supplier.find();
+        console.log("Fetched suppliers:", suppliers);
         res.status(200).json(suppliers);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching suppliers', error: error.message });
