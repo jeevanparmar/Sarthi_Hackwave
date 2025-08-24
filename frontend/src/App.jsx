@@ -9,6 +9,7 @@ import DataIntegrations from "./pages/DataIntegrations";
 import Settings from "./pages/Settings";
 import TopNavbar from "./components/TopNavbar";
 import Footer from "./components/Footer";
+import SimulationResults from "./components/SimulationResults";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
               <Route path="/risk-reports" element={<RiskReports />} />
               <Route path="/data-integrations" element={<DataIntegrations />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/simulateResult" element={<SimulationResults/>} />
             </Routes>
           </main>
 

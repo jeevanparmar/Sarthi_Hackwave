@@ -13,29 +13,56 @@ import {
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SimulationResults from '../components/SimulationResults';
+import axios from "axios";
 
 export default function Dashboard() {
   // Dummy state data
   const [riskData, setRiskData] = useState({
-    supplierRisk: { value: 73, change: -12, note: "3 suppliers flagged" },
-    transportDelays: { value: 45, change: 8, note: "Avg delay: 2.3 days" },
-    geopolitical: { value: 58, change: -5, note: "2 regions affected" },
-    climateRisk: { value: 32, change: -15, note: "Low seasonal impact" },
+    supplierRisk: { value: 0, change: 0, note: "" },
+    transportDelays: { value: 0, change: 0, note: "" },
+    geopolitical: { value: 0, change: 0, note: "" },
+    climateRisk: { value: 0, change: 0, note: "" },
   });
 
-  const [trendData, setTrendData] = useState([
-    { month: "Jan", supplier: 50, transport: 30, geo: 40, climate: 25 },
-    { month: "Feb", supplier: 60, transport: 45, geo: 50, climate: 30 },
-    { month: "Mar", supplier: 55, transport: 35, geo: 60, climate: 40 },
-    { month: "Apr", supplier: 70, transport: 25, geo: 75, climate: 35 },
-    { month: "May", supplier: 65, transport: 60, geo: 55, climate: 45 },
-    { month: "Jun", supplier: 58, transport: 40, geo: 65, climate: 30 },
-  ]);
+  const [trendData, setTrendData] = useState([]);
 
   const [mapData] = useState([
-    { lat: 40.7128, lng: -74.006, risk: "High Risk" },
-    { lat: 34.0522, lng: -118.2437, risk: "Medium Risk" },
-    { lat: 51.5074, lng: -0.1278, risk: "Low Risk" },
+    {
+      country: "Nepal",
+      lat: 28.3949,
+      lng: 84.1240,
+      risk: "Medium Risk",
+    },
+    {
+      country: "Germany",
+      lat: 51.1657,
+      lng: 10.4515,
+      risk: "Low Risk",
+    },
+    {
+      country: "Japan",
+      lat: 36.2048,
+      lng: 138.2529,
+      risk: "High Risk",
+    },
+    {
+      country: "Sri Lanka",
+      lat: 7.8731,
+      lng: 80.7718,
+      risk: "Low Risk",
+    },
+    {
+      country: "USA",
+      lat: 37.0902,
+      lng: -95.7129,
+      risk: "High Risk",
+    },
+    {
+      country: "China",
+      lat: 35.8617,
+      lng: 104.1954,
+      risk: "Medium Risk",
+    },
   ]);
 
   const [scenario, setScenario] = useState("Supplier Strike");
@@ -75,139 +102,322 @@ export default function Dashboard() {
   }, []);
   */
 
-const dummyResults = {
+  const dummyResults = {
     "message": "Prediction successful",
     "total_transformation_field": [
-        {
-            "supplier": "68aaa37013556dfa05784c94",
-            "delay_days": 6,
-            "required_material": 1000,
-            "predicted_material": 582,
-            "loss": -41800,
-            "risk_pct": 91.79,
-            "recommendation": "High risk — consider backup supplier or increase safety stock",
-            "_id": "68aacaea1b9eeed46a6bb245",
-            "createdAt": "2025-08-24T08:18:50.121Z",
-            "__v": 0
-        },
-        {
-            "supplier": "68aaa3a813556dfa05784c96",
-            "delay_days": 0,
-            "geopolitical_points_bounds": 0.6,
-            "required_material": 1000,
-            "predicted_material": 1085,
-            "loss": 9350,
-            "risk_pct": 4.41,
-            "recommendation": "Low risk — proceed as planned",
-            "_id": "68aacaea1b9eeed46a6bb248",
-            "createdAt": "2025-08-24T08:18:50.409Z",
-            "__v": 0
-        },
-        {
-            "supplier": "68aaa3c513556dfa05784c98",
-            "delay_days": 0,
-            "geopolitical_points_bounds": 0.3,
-            "required_material": 1000,
-            "predicted_material": 972,
-            "loss": -3640,
-            "risk_pct": 7.74,
-            "recommendation": "Low risk — proceed as planned",
-            "_id": "68aacaea1b9eeed46a6bb24b",
-            "createdAt": "2025-08-24T08:18:50.576Z",
-            "__v": 0
-        }
-    ]
-}
+      {
+        "supplier": "68aaa37013556dfa05784c94",
+        "delay_days": 6,
+        "required_material": 1000,
+        "predicted_material": 582,
+        "loss": -41800,
+        "risk_pct": 91.79,
+        "recommendation": "High risk — consider backup supplier or increase safety stock",
+        "_id": "68aacaea1b9eeed46a6bb245",
+        "createdAt": "2025-08-24T08:18:50.121Z",
+        "__v": 0
+      },
+      {
+        "supplier": "68aaa3a813556dfa05784c96",
+        "delay_days": 0,
+        "geopolitical_points_bounds": 0.6,
+        "required_material": 1000,
+        "predicted_material": 1085,
+        "loss": 9350,
+        "risk_pct": 4.41,
+        "recommendation": "Low risk — proceed as planned",
+        "_id": "68aacaea1b9eeed46a6bb248",
+        "createdAt": "2025-08-24T08:18:50.409Z",
+        "__v": 0
+      },
+      {
+        "supplier": "68aaa3c513556dfa05784c98",
+        "delay_days": 0,
+        "geopolitical_points_bounds": 0.3,
+        "required_material": 1000,
+        "predicted_material": 972,
+        "loss": -3640,
+        "risk_pct": 7.74,
+        "recommendation": "Low risk — proceed as planned",
+        "_id": "68aacaea1b9eeed46a6bb24b",
+        "createdAt": "2025-08-24T08:18:50.576Z",
+        "__v": 0
+      }
+    ]
+  }
 
+  const fetchResults = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/dashboard");
+      console.log("Dashboard data:", response.data);
+
+      const apiData = response.data;
+
+      // ✅ set riskData directly
+      setRiskData({
+        supplierRisk: apiData.supplierRisk,
+        transportDelays: apiData.transportDelays,
+        geopolitical: apiData.geopolitical,
+        climateRisk: apiData.climateRisk,
+      });
+
+      // ✅ set trendData directly
+      setTrendData(apiData.trendData);
+
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchResults();
+  }, []);
 
   return (
     <>
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Supply Chain Dashboard</h1>
-          <p className="text-gray-500">
-            Real-time vulnerability monitoring and assessment
-          </p>
-        </div>
-        <p className="text-sm text-gray-400">Last updated 2 min ago ●</p>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Object.entries(riskData).map(([key, item]) => (
-          <div
-            key={key}
-            className="bg-white shadow rounded-xl p-4 flex flex-col gap-1"
-          >
-            <p className="text-gray-500 capitalize">{key.replace(/([A-Z])/g, " $1")}</p>
-            <h2 className="text-2xl font-bold">{item.value}</h2>
-            <p
-              className={`text-sm ${
-                item.change > 0 ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {item.change > 0 ? `▲ ${item.change}%` : `▼ ${Math.abs(item.change)}%`}
+      <div className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">Supply Chain Dashboard</h1>
+            <p className="text-gray-500">
+              Real-time vulnerability monitoring and assessment
             </p>
-            <p className="text-xs text-gray-400">{item.note}</p>
           </div>
-        ))}
-      </div>
-
-      {/* Trends + Map */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Trends */}
-        <div className="bg-white p-4 rounded-xl shadow">
-          <h3 className="font-semibold mb-2">Vulnerability Trends</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={trendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="supplier" stroke="#ef4444" />
-              <Line type="monotone" dataKey="transport" stroke="#f59e0b" />
-              <Line type="monotone" dataKey="geo" stroke="#3b82f6" />
-              <Line type="monotone" dataKey="climate" stroke="#10b981" />
-            </LineChart>
-          </ResponsiveContainer>
+          <p className="text-sm text-gray-400">Last updated</p>
         </div>
 
-        {/* Map */}
-        <div className="bg-white p-4 rounded-xl shadow">
-          <h3 className="font-semibold mb-2">Global Supply Chain</h3>
-          <MapContainer center={[20, 0]} zoom={2} className="h-[250px] w-full">
-            <TileLayer
-              attribution='&copy; OpenStreetMap'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {mapData.map((loc, idx) => (
-              <CircleMarker
-                key={idx}
-                center={[loc.lat, loc.lng]}
-                radius={8}
-                pathOptions={{
-                  color:
-                    loc.risk === "High Risk"
-                      ? "red"
-                      : loc.risk === "Medium Risk"
-                      ? "orange"
-                      : "green",
-                }}
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Object.entries(riskData).map(([key, item]) => (
+            <div
+              key={key}
+              className="bg-white shadow rounded-xl p-4 flex flex-col gap-1"
+            >
+              <p className="text-gray-500 capitalize">{key.replace(/([A-Z])/g, " $1")}</p>
+              <h2 className="text-2xl font-bold">{item.value}</h2>
+              <p
+                className={`text-sm ${item.change > 0 ? "text-green-600" : "text-red-600"
+                  }`}
               >
-                <Popup>{loc.risk}</Popup>
-              </CircleMarker>
-            ))}
-          </MapContainer>
+                {item.change > 0 ? `▲ ${item.change}%` : `▼ ${Math.abs(item.change)}%`}
+              </p>
+              <p className="text-xs text-gray-400">{item.note}</p>
+            </div>
+          ))}
         </div>
-      </div>
 
-      {/* Scenario + Recommendations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Scenario */}
-        <div className="bg-white p-4 rounded-xl shadow">
+        {/* Trends + Map */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Supplier Trend */}
+          <div className="bg-white p-4 rounded-2xl shadow-lg mb-6">
+            <h3 className="font-semibold mb-3 text-gray-700">Supplier Trend</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={trendData}>
+                <CartesianGrid stroke="#e5e7eb" strokeDasharray="4 4" />
+                <XAxis
+                  dataKey="month"
+                  label={{
+                    value: "Month",
+                    position: "insideBottom",
+                    offset: -5,
+                    style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
+                  }}
+                />
+                <YAxis
+                  label={{
+                    value: "Supplier Risk",
+                    angle: -90,
+                    position: "insideLeft",
+                    style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    borderRadius: "12px",
+                    border: "1px solid #e5e7eb",
+                    boxShadow: "0px 4px 12px rgba(0,0,0,0.1)"
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="supplier"
+                  stroke="#ef4444"
+                  strokeWidth={3}
+                  dot={{ r: 5, fill: "#ef4444", stroke: "white", strokeWidth: 2 }}
+                  activeDot={{ r: 7, stroke: "#ef4444", strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Transport Trend */}
+          <div className="bg-white p-4 rounded-2xl shadow-lg mb-6">
+            <h3 className="font-semibold mb-3 text-gray-700">Transport Trend</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={trendData}>
+                <CartesianGrid stroke="#e5e7eb" strokeDasharray="4 4" />
+                <XAxis
+                  dataKey="month"
+                  label={{
+                    value: "Month",
+                    position: "insideBottom",
+                    offset: -5,
+                    style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
+                  }}
+                />
+                <YAxis
+                  label={{
+                    value: "Delay Days",
+                    angle: -90,
+                    position: "insideLeft",
+                    style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    borderRadius: "12px",
+                    border: "1px solid #e5e7eb",
+                    boxShadow: "0px 4px 12px rgba(0,0,0,0.1)"
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="transport"
+                  stroke="#f59e0b"
+                  strokeWidth={3}
+                  dot={{ r: 5, fill: "#f59e0b", stroke: "white", strokeWidth: 2 }}
+                  activeDot={{ r: 7, stroke: "#f59e0b", strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+
+          {/* Predicted Material */}
+          <div className="bg-white p-4 rounded-2xl shadow-lg mb-6">
+            <h3 className="font-semibold mb-3 text-gray-700">Predicted Material</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={trendData}>
+                <CartesianGrid stroke="#e5e7eb" strokeDasharray="4 4" />
+                <XAxis
+                  dataKey="month"
+                  label={{
+                    value: "Month",
+                    position: "insideBottom",
+                    offset: -5,
+                    style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
+                  }}
+                />
+                <YAxis
+                  label={{
+                    value: "Predicted Material",
+                    angle: -90,
+                    position: "insideLeft",
+                    style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    borderRadius: "12px",
+                    border: "1px solid #e5e7eb",
+                    boxShadow: "0px 4px 12px rgba(0,0,0,0.1)"
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="geo"
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                  dot={{ r: 5, fill: "#3b82f6", stroke: "white", strokeWidth: 2 }}
+                  activeDot={{ r: 7, stroke: "#3b82f6", strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+
+          {/* Predicted Loss */}
+          <div className="bg-white p-4 rounded-2xl shadow-lg mb-6">
+            <h3 className="font-semibold mb-3 text-gray-700">Predicted Loss</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={trendData}>
+                <CartesianGrid stroke="#e5e7eb" strokeDasharray="4 4" />
+                <XAxis
+                  dataKey="month"
+                  label={{
+                    value: "Month",
+                    position: "insideBottom",
+                    offset: -5,
+                    style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
+                  }}
+                />
+                <YAxis
+                  label={{
+                    value: "Predicted Loss",
+                    angle: -90,
+                    position: "insideLeft",
+                    style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    borderRadius: "12px",
+                    border: "1px solid #e5e7eb",
+                    boxShadow: "0px 4px 12px rgba(0,0,0,0.1)"
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="climate"
+                  stroke="#10b981"
+                  strokeWidth={3}
+                  dot={{ r: 5, fill: "#10b981", stroke: "white", strokeWidth: 2 }}
+                  activeDot={{ r: 7, stroke: "#10b981", strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+
+          {/* Map */}
+          {/* Global Supply Chain Map (takes full row, equal to 2 charts) */}
+          <div className="bg-white p-4 rounded-xl shadow col-span-2">
+            <h3 className="font-semibold mb-2">Global Supply Chain</h3>
+            <MapContainer center={[20, 0]} zoom={2} className="h-[250px] w-full">
+              <TileLayer
+                attribution='&copy; OpenStreetMap'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {mapData.map((loc, idx) => (
+                <CircleMarker
+                  key={idx}
+                  center={[loc.lat, loc.lng]}
+                  radius={8}
+                  pathOptions={{
+                    color:
+                      loc.risk === "High Risk"
+                        ? "red"
+                        : loc.risk === "Medium Risk"
+                          ? "orange"
+                          : "green",
+                  }}
+                >
+                  <Popup>{loc.risk}</Popup>
+                </CircleMarker>
+              ))}
+            </MapContainer>
+          </div>
+        </div>
+
+        {/* Scenario + Recommendations */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Scenario */}
+          {/* <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="font-semibold mb-4">Scenario Testing</h3>
           <div className="flex gap-2 mb-4">
             {["Supplier Strike", "Port Delay", "Natural Disaster", "Cyber Attack"].map(
@@ -235,10 +445,10 @@ const dummyResults = {
             <p>Affected Products: 23%</p>
             <p>Recovery Time: 6 weeks</p>
           </div>
-        </div>
+        </div> */}
 
-        {/* AI Strategy */}
-        <div className="bg-white p-4 rounded-xl shadow">
+          {/* AI Strategy */}
+          {/* <div className="bg-white p-4 rounded-xl shadow">
           <h3 className="font-semibold mb-4">
             AI Strategy Recommendations{" "}
             <span className="text-pink-500 font-bold text-xs">AI</span>
@@ -258,13 +468,10 @@ const dummyResults = {
               </div>
             ))}
           </div>
-          {/* <button className="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg">
-            Generate More Recommendations
-          </button> */}
+        </div> */}
         </div>
       </div>
-    </div>
-    <SimulationResults results={dummyResults}></SimulationResults>
+      {/* <SimulationResults results={dummyResults}></SimulationResults> */}
     </>
   );
 }
