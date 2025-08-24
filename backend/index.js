@@ -9,6 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/api", weatherApi);
 app.use("/api",require("./Router/SupplierRoutes"));
+app.use("/api",require("./Router/Dashboard"));
 
 
 app.listen(3000,()=>{
