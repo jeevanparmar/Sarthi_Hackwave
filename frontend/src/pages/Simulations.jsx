@@ -2,91 +2,40 @@
 import React, { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import axios from "axios";
 
 const Simulation = () => {
-    const [suppliers, setSuppliers] = useState([
-        {
-            _id: "68aaa37013556dfa05784c94",
-            name: "Global Tyres Ltd",
-            country: "Germany",
-            product: "Tyres",
-            priority: 1,
-            avg_lead_time: 7,
-            reliability_score: 0.85,
-            geopolitical_risk: 0.4,
-            price_index: 1000,
-            delay_days: 0,
-        },
-        {
-            _id: "68aaa3a813556dfa05784c96",
-            name: "Speedy Tyres Co.",
-            country: "Japan",
-            product: "Tyres",
-            priority: 2,
-            avg_lead_time: 10,
-            reliability_score: 0.78,
-            geopolitical_risk: 0.6,
-            price_index: 0.95,
-            delay_days: 0,
-        },
-        {
-            _id: "68aaa3c513556dfa05784c98",
-            name: "Continental Rubber",
-            country: "USA",
-            product: "Tyres",
-            priority: 3,
-            avg_lead_time: 5,
-            reliability_score: 0.92,
-            geopolitical_risk: 0.3,
-            price_index: 1.2,
-            delay_days: 0,
-        },
-    ]);
-
-    const [bodySuppliers, setBodySuppliers] = useState([
-        {
-            _id: "68aaea5c6aa1ad06a689a779",
-            name: "Alpha Body Frame",
-            country: "Nepal",
-            product: "EV Body",
-            priority: 1,
-            defective_rate: 0.05,
-            transport_status: 1,
-            expected_units: 850,
-            price_index: 1,
-            delay_days: 2,
-        },
-        {
-            _id: "68aaeadd6aa1ad06a689a77b",
-            name: "Titanium Chassis",
-            country: "Germany",
-            product: "EV Body",
-            priority: 2,
-            defective_rate: 0.08,
-            transport_status: 2,
-            expected_units: 980,
-            price_index: 1,
-            delay_days: 5,
-        },
-        {
-            _id: "68aaeb136aa1ad06a689a77d",
-            name: "Carbon Street Frame",
-            country: "Japan",
-            product: "EV Body",
-            priority: 3,
-            defective_rate: 0.03,
-            transport_status: 1,
-            expected_units: 1120,
-            price_index: 1,
-            delay_days: 1,
-        },
-    ]);
-
-const [tyres,setTyres]=useState(false);
-
+    const [suppliers, setSuppliers] = useState([]);
+    const [bodySuppliers, setBodySuppliers] = useState([]);
+    const [tyres, setTyres] = useState(false);
     const [editsuplierbody, setEditingType] = useState(false);
     const [editingSupplier, setEditingSupplier] = useState(null);
     const [formValues, setFormValues] = useState({});
+    const [activeTab, setActiveTab] = useState("tyre");
+
+
+    const gettyres = async () => {
+        try {
+            const response = await axios.get("http://localhost:3000/api/suppliers");
+            console.log(response.data);
+            setSuppliers(response.data);
+        }
+        catch (error) {
+            console.error("Error fetching suppliers:", error);
+        }
+    };
+
+
+    const getBody = async () => {
+        try {
+            const response = await axios.get("http://localhost:3000/api/bodyUnit");
+            console.log(response.data);
+            setBodySuppliers(response.data);
+        }
+        catch (error) {
+            console.error("Error fetching suppliers:", error);
+        }
+    };
 
     // handle input change
     const handleChange = (e) => {
@@ -150,12 +99,25 @@ const [tyres,setTyres]=useState(false);
         if (pct <= 60)
             return <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">Medium</span>;
         return <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">High</span>;
+    }; 
+    const handlerTyresPrediction = async() => {
+        try {
+            const payload = { suppliers };
+            console.log("Payload for prediction:", payload);    
+            const response = await axios.post("http://localhost:3000/api/predict", payload);
+            console.log("Prediction response:", response.data);
+            alert("Simulation run successfully! Check console for details.");
+        } catch (error) {
+            console.error("Error running simulation:", error);
+            alert("Failed to run simulation. Check console for details.");
+        }
     };
 
     useEffect(() => {
         AOS.init({ duration: 600 });
+        gettyres();
+        getBody();
     }, []);
-    const [activeTab, setActiveTab] = useState("tyre");
     return (
         <div className="p-6" data-aos="fade-up">
             <h2 className="text-2xl font-bold mb-6">⚡ Simulation Dashboard</h2>
@@ -225,10 +187,10 @@ const [tyres,setTyres]=useState(false);
                                     <td className="p-3">
                                         <span
                                             className={`px-2 py-1 rounded-full text-xs font-semibold ${s.defective_rate < 0.03
-                                                    ? "bg-green-100 text-green-800"
-                                                    : s.defective_rate <= 0.06
-                                                        ? "bg-yellow-100 text-yellow-800"
-                                                        : "bg-red-100 text-red-800"
+                                                ? "bg-green-100 text-green-800"
+                                                : s.defective_rate <= 0.06
+                                                    ? "bg-yellow-100 text-yellow-800"
+                                                    : "bg-red-100 text-red-800"
                                                 }`}
                                         >
                                             {(s.defective_rate * 100).toFixed(1)}%
@@ -241,10 +203,10 @@ const [tyres,setTyres]=useState(false);
                                     <td className="p-3">
                                         <span
                                             className={`px-2 py-1 rounded-full text-xs font-semibold ${s.expected_units > 1000
-                                                    ? "bg-green-100 text-green-800"
-                                                    : s.expected_units >= 700
-                                                        ? "bg-yellow-100 text-yellow-800"
-                                                        : "bg-red-100 text-red-800"
+                                                ? "bg-green-100 text-green-800"
+                                                : s.expected_units >= 700
+                                                    ? "bg-yellow-100 text-yellow-800"
+                                                    : "bg-red-100 text-red-800"
                                                 }`}
                                         >
                                             {s.expected_units}
@@ -275,7 +237,8 @@ const [tyres,setTyres]=useState(false);
                     <div className="flex justify-end mt-6">
                         <button
                             className="bg-blue-600 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-700 transition"
-                        >
+                          onClick={handlerBodyPrediction}
+                       >
                             Run Simulation
                         </button>
                     </div>
@@ -415,6 +378,7 @@ const [tyres,setTyres]=useState(false);
                     <div className="flex justify-end mt-6">
                         <button
                             className="bg-blue-600 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-700 transition"
+                        onClick={handlerTyresPrediction}
                         >
                             Run Simulation
                         </button>
@@ -470,7 +434,7 @@ const [tyres,setTyres]=useState(false);
                         <div className="flex justify-end gap-3 mt-6">
                             <button
                                 className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
-                                onClick={() => {setEditingSupplier(null); setTyres(false)}}
+                                onClick={() => { setEditingSupplier(null); setTyres(false) }}
                             >
                                 Cancel
                             </button>
