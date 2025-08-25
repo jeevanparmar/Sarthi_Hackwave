@@ -1,7 +1,8 @@
-import logo from '../assets/images/logo.png'
+
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Play, FileText, Database, Settings } from "lucide-react";
 import illus from '../assets/images/illus.png'; // placeholder illustration you downloaded
+import { FaUserShield } from "react-icons/fa";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -15,20 +16,21 @@ const Sidebar = () => {
     }`;
 
   return (
-    <aside className="w-64 bg-gradient-to-r from-[#0473fb] to-[#042c70] shadow-sm p-6 flex flex-col justify-between h-screen">
+    <aside className="w-64 bg-gradient-to-r from-[#0473fb] to-[#042c70] shadow-sm p-6 flex flex-col justify-between h-screen fixed">
       {/* Top Section */}
       <div>
         <div className="flex items-center space-x-2 mb-6">
-          <img
+          {/* <img
             src={logo}
             height={30}
             width={30}
             className="text-white"
             alt="Logo"
-          />
-          <h1 className="text-xl font-bold text-white">AI Agent</h1>
+          /> */}
+          <FaUserShield  className="text-white h-8 w-8" />
+          <h1 className="text-xl font-bold text-white">SupplyShield AI</h1>
         </div>
-        <p className="text-sm text-gray-200 mb-6">Supply Chain Security</p>
+        <p className="text-base font-bold text-gray-200 mb-6">Supply Chain Security</p>
 
         {/* Navigation */}
         <nav className="space-y-3">
@@ -60,15 +62,7 @@ const Sidebar = () => {
       </div>
 
       {/* Bottom Illustration Section */}
-      <div className="bg-white rounded-xl p-4 mt-6 text-center shadow-md">
-        <p className="text-sm font-semibold text-[#042c70] mb-2">
-          Use our Premium Features Now!
-        </p>
-        <div className="w-full h-28 flex items-center justify-center">
-          {/* Illustration image */}
-          <img src={illus} alt="Illustration" className="max-h-32 object-contain" />
-        </div>
-      </div>
+      
     </aside>
   );
 };

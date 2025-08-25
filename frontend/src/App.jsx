@@ -11,6 +11,7 @@ import TopNavbar from "./components/TopNavbar";
 import Footer from "./components/Footer";
 import SimulationResults from "./components/SimulationResults";
 import SupplyPartnersOverview from "./pages/SupplyPartnersOverview";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
           <TopNavbar />
 
           {/* 🔹 Page Content */}
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 p-6 overflow-y-auto ml-64"  >
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/simulations" element={<Simulations />} />

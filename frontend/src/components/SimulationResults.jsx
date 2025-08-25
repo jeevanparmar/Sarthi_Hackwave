@@ -49,12 +49,6 @@ const SimulationResults = () => {
               <YAxis className="text-sm" />
               <Tooltip />
               <Legend />
-              {/* <Bar
-                dataKey="required_material"
-                fill="#042c70"
-                name="Required"
-                radius={[6, 6, 0, 0]}
-              /> */}
               <Bar
                 dataKey="predicted_material"
                 fill="#0473fb"
@@ -68,7 +62,38 @@ const SimulationResults = () => {
 
         {/* Line Chart: Risk % over suppliers */}
         <div className="bg-white shadow-md rounded-2xl p-4">
-          <h3 className="text-lg font-semibold mb-2">Risk % by Supplier</h3>
+
+          <h3 className="text-lg font-semibold mb-2">
+            Financial Loss / Profit by Supplier
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart 
+            
+            data={suppliers.map(item => ({
+                ...item,
+                companyLabel: item.companyName , // fallback agar companyName missing ho
+              }))}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="companyLabel" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar
+                dataKey="loss"
+                name="Loss / Profit"
+                radius={[5, 5, 0, 0]}
+                fill="#0473fb"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+
+
+        {/* Loss Chart */}
+        <div className="bg-white shadow-md rounded-2xl p-4 md:col-span-2">
+                    <h3 className="text-lg font-semibold mb-2">Risk % by Supplier</h3>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart
               data={suppliers.map(item => ({
@@ -88,30 +113,7 @@ const SimulationResults = () => {
               />
             </LineChart>
           </ResponsiveContainer>
-        </div>
 
-
-
-        {/* Loss Chart */}
-        <div className="bg-white shadow-md rounded-2xl p-4 md:col-span-2">
-          <h3 className="text-lg font-semibold mb-2">
-            Financial Loss / Profit by Supplier
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={suppliers}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="supplier" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar
-                dataKey="loss"
-                name="Loss / Profit"
-                radius={[6, 6, 0, 0]}
-                fill="#0473fb"
-              />
-            </BarChart>
-          </ResponsiveContainer>
         </div>
       </div>
 
@@ -176,7 +178,7 @@ const SimulationResults = () => {
                   </td>
 
                   {/* Recommendation with italic style */}
-                  <td className="p-3 text-gray-600 italic">{s.recommendation}</td>
+                  <td className="p-3 text-gray-600 italic text-base">{s.recommendation}</td>
                 </tr>
               ))}
             </tbody>

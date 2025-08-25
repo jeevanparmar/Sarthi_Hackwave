@@ -10,12 +10,12 @@ const TopNavbar = () => {
       {/* Right side - Actions */}
       <div className="flex items-center space-x-6">
         {/* Notifications */}
-        <button className="relative p-2 hover:bg-gray-100 rounded-full">
+        {/* <button className="relative p-2 hover:bg-gray-100 rounded-full">
           <Bell className="h-5 w-5 text-gray-600" />
           <span className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full px-1">
             3
           </span>
-        </button>
+        </button> */}
 
         {/* Settings */}
         <button className="p-2 hover:bg-gray-100 rounded-full">

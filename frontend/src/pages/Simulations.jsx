@@ -4,6 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Simulation = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -135,11 +136,12 @@ const Simulation = () => {
   const handlerTyresPrediction = async () => {
     try {
       const payload = { suppliers };
-      console.log("Payload for prediction:", payload);
+      toast.success("wait a second");
+;      console.log("Payload for prediction:", payload);
       const response = await axios.post("http://localhost:3000/api/predict", payload);
       console.log("Prediction response:", response.data);
       navigate("/simulateResult", { state: { data1: response.data } });
-      alert("Simulation run successfully! Check console for details.");
+      toast.success("Simulation run successfully!");
     } catch (error) {
       console.error("Error running simulation:", error);
       alert("Failed to run simulation. Check console for details.");
@@ -149,16 +151,18 @@ const Simulation = () => {
   const handlerBodyPrediction = async () => {
     // alert("click")
     try {
-      console.log("Running body prediction...");
+    //   console.log("Running body prediction...");
+    toast.success("wait a second");
       const payload = { bodySuppliers };
       const response = await axios.post("http://localhost:3000/api/predictBodyUnit", payload);
       console.log("Prediction response:", response.data);
       navigate("/simulateResult", { state: { data1: response.data } });
-      alert("Simulation run successfully! Check console for details.");
+    //   alert("Simulation run successfully! Check console for details.");
+    toast.success("Simulation run successfully!");
     }
     catch (error) {
-      console.error("Error running simulation:", error);
-      alert("Failed to run simulation. Check console for details.");
+    //   console.error("Error running simulation:", error);
+      toast.error("Failed to run simulation. Check console for details.");
     }
   }
 
