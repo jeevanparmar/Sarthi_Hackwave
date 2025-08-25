@@ -56,7 +56,7 @@ exports.predictSupplyRisk = async (req, res) => {
 
         //mitigation
         let is_recommendation = 0;
-        if (risk_pct > 70) {
+        if (risk_pct > 60) {
             is_recommendation = 1;
         }
         console.log("Flask response:", flaskResp.data);
@@ -241,7 +241,7 @@ exports.predictBodyUnitRisk = async (req, res) => {
 
         // mitigation
         let is_recommendation = 0;
-        if (risk_pct > 70) {
+        if (risk_pct > 60) {
             is_recommendation = 1;
         }
         console.log("Flask response:", flaskResp.data);
