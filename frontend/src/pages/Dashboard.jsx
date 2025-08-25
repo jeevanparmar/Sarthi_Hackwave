@@ -96,13 +96,12 @@ export default function Dashboard() {
           <div>
             <h1 className="text-2xl font-bold">Supply Chain Dashboard</h1>
             <p className="text-gray-500">
-              Real-time vulnerability monitoring and assessment
+              Today Real-time vulnerability monitoring and assessment
             </p>
           </div>
           <p className="text-sm text-gray-400">Last updated</p>
         </div>
-
-        {/* Summary Cards */}
+            {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {Object.entries(riskData).map(([key, item]) => (
             <div
@@ -133,9 +132,9 @@ export default function Dashboard() {
                 <XAxis
                   dataKey="month"
                   label={{
-                    value: "Month",
+                    value: "Previous Days",
                     position: "insideBottom",
-                    offset: -4,
+                    offset: -2,
                     style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
                   }}
                 />
@@ -176,7 +175,7 @@ export default function Dashboard() {
                 <XAxis
                   dataKey="month"
                   label={{
-                    value: "Month",
+                    value: "Previous Days",
                     position: "insideBottom",
                     offset: -4,
                     style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
@@ -220,7 +219,7 @@ export default function Dashboard() {
                 <XAxis
                   dataKey="month"
                   label={{
-                    value: "Month",
+                    value: "Previous Days",
                     position: "insideBottom",
                     offset: -4,
                     style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
@@ -231,6 +230,7 @@ export default function Dashboard() {
                     value: "Predicted Material",
                     angle: -90,
                     position: "insideLeft",
+                    
                     style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
                   }}
                 />
@@ -262,7 +262,7 @@ export default function Dashboard() {
               <LineChart data={trendData}>
                 <CartesianGrid stroke="#e5e7eb" strokeDasharray="4 4" />
                 <XAxis
-                  dataKey="month"
+                  dataKey="Previous Days"
                   label={{
                     value: "Month",
                     position: "insideBottom",

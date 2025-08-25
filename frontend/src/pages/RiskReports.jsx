@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { TrendingUp, Calendar } from "lucide-react";
 import axios from "axios";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const RiskReports = () => {
   const [reports, setReports] = useState([]);
@@ -28,10 +30,10 @@ const RiskReports = () => {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <TrendingUp className="text-[#0473fb]" size={28} />
+      <div className="flex items-center gap-3">
+        <TrendingUp className="text-[#0473fb]" size={30} />
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Risk Reports</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Risk Reports</h2>
           <p className="text-gray-500 text-sm">
             Showing the latest risk assessment reports
           </p>
@@ -40,60 +42,62 @@ const RiskReports = () => {
 
       {/* Reports Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {reports.map((report, index) => (
-          <div
-            key={index}
-            className="rounded-2xl border border-gray-200 bg-white/90 backdrop-blur shadow hover:shadow-lg transition overflow-hidden"
-          >
-            {/* Top Risk Highlight */}
-            <div
-              className={`p-4 flex justify-between items-center ${
-                report.risk_pct > 70
-                  ? "bg-red-50"
-                  : report.risk_pct > 40
-                  ? "bg-yellow-50"
-                  : "bg-green-50"
-              }`}
-            >
-              <h4 className="font-semibold text-gray-800">
-                Report #{index + 1}
-              </h4>
-              <span
-                className={`px-3 py-1 text-sm rounded-full font-medium ${
-                  report.risk_pct > 70
-                    ? "bg-red-100 text-red-700"
-                    : report.risk_pct > 40
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-green-100 text-green-700"
-                }`}
-              >
-                {report.risk_pct}% Risk
-              </span>
-            </div>
+        {reports.map((report, index) => {
+          const riskLevel =
+            report.risk_pct > 70
+              ? { color: "bg-red-100 text-red-700", label: "High" }
+              : report.risk_pct > 40
+              ? { color: "bg-yellow-100 text-yellow-700", label: "Medium" }
+              : { color: "bg-green-100 text-green-700", label: "Low" };
 
-            {/* Details */}
-            <div className="p-4 space-y-2 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <Calendar size={16} className="text-gray-500" />
-                <span>{report.date}</span>
-              </div>
-              <p>
-                <span className="font-medium text-gray-800">Delay Days:</span>{" "}
-                {report.delay_days}
-              </p>
-              <p>
-                <span className="font-medium text-gray-800">
-                  Predicted Material:
-                </span>{" "}
-                {report.predicted_material}
-              </p>
-              <p>
-                <span className="font-medium text-gray-800">Loss:</span>{" "}
-                <span className="text-red-600">{report.loss}</span>
-              </p>
-            </div>
-          </div>
-        ))}
+          return (
+            <Card
+              key={index}
+              className="rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200"
+            >
+              <CardHeader className="flex flex-row items-center justify-between p-4 border-b bg-gray-50/70">
+                <CardTitle className="text-base font-semibold text-gray-800">
+                  Report #{index + 1}
+                </CardTitle>
+                <Badge className={`${riskLevel.color} px-3 py-1 rounded-full`}>
+                  {report.risk_pct}% {riskLevel.label}
+                </Badge>
+              </CardHeader>
+
+              <CardContent className="p-4 space-y-3 text-sm text-gray-700">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Calendar size={16} />
+                  <span>
+                    {new Date(report.date).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+
+                <p>
+                  <span className="font-medium">Delay Days:</span>{" "}
+                  {report.delay_days}
+                </p>
+                <p>
+                  <span className="font-medium">Predicted Material:</span>{" "}
+                  {report.predicted_material}
+                </p>
+                <p>
+                  <span className="font-medium">Loss:</span>{" "}
+                  <span
+                    className={
+                      report.loss < 0 ? "text-red-600" : "text-green-600"
+                    }
+                  >
+                    {report.loss}
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
