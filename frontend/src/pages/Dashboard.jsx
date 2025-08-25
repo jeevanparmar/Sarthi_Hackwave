@@ -262,9 +262,9 @@ export default function Dashboard() {
               <LineChart data={trendData}>
                 <CartesianGrid stroke="#e5e7eb" strokeDasharray="4 4" />
                 <XAxis
-                  dataKey="Previous Days"
+                  dataKey="month"
                   label={{
-                    value: "Month",
+                    value: "Previous Days",
                     position: "insideBottom",
                     offset: -5,
                     style: { textAnchor: "middle", fontSize: 13, fill: "#374151", fontWeight: "bold" }
